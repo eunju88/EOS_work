@@ -1,0 +1,104 @@
+- 임의에 위치에 폴더 생성
+EOSJS로 생성한다.
+
+- npm 설치
+vscode에서 EOSJS 폴더 위치를열고 해당 위치에서 powershell (관리자 권한)이나 cmd에서 아래 두개 설치
+(cmd에서 에러나면 powershell 관리자 권한으로 열어서 설치하면 된다.)
+npm install eosjs
+npm install node-fetch 
+
+- JS 파일 생성1
+01_connectRpc.js
+
+이것저것 간단한 테스트용으로
+
+아래 내용 넣기
+const { JsonRpc } = require('eosjs');
+const fetch = require('node-fetch');
+const rpc = new JsonRpc('http://jungle2.cryptolions.io:80', { fetch });
+
+// read eos blockchanin info
+// rpc.get_info().then(console.log);
+
+// 2번째 블록 정보
+//rpc.get_block(2).then(console.log);
+
+// => https://jungle.bloks.io/account/eoseunjutst2 에서 같은지 확인이 가능하다
+// rpc.get_account('eoseunjutst2').then(console.log);
+
+// 잔액정보
+// 발급사, 검색하고픈 계정, 심볼
+rpc.get_currency_balance('eosio.token', 'eoseunjutst2', 'EOS').then(console.log);
+rpc.get_currency_balance('eosio.token', 'eoseunjutst2', 'JUNGLE').then(console.log);
+
+
+
+- JS 파일생성 2
+02_transfer.js
+EOS 전송 실습
+
+EOS 발송
+const { Api, JsonRpc } = require('eosjs');
+const fetch = require('node-fetch');
+const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig');
+const { TextDecoder, TextEncoder } = require('util');
+
+const privateKeys = [ '5JeqGuVt79ZUeQh1rekay7zGoutW7pzoCQR8Awr4fvuQ8oykv3D' ];
+
+const signatureProvider = new JsSignatureProvider(privateKeys);
+
+const rpc = new JsonRpc('http://jungle2.cryptolions.io:80', { fetch });
+
+const eos = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() });
+
+
+// 비동기방식으로 함수 실행할 것.
+async function transfer () {
+    const result = await eos.transact({
+        actions: [{
+            // 토큰 발행사
+            account: 'eosio.token',
+            // epsio.token의 함수명
+            name: 'transfer',
+            // 액션 날릴 액션 명
+            authorization: [{
+              actor: 'eoseunjutst2', // 토큰 전송 계정
+              // owner 권한, active 권한
+              permission: 'active',
+            }],
+            data: {
+                from : 'eoseunjutst2', // 토큰 전송 계정
+                to : 'getredpengio', // 토큰 전송 받는 계정
+                quantity : '1.0000 EOS', // 토큰 보내는 양
+                memo : 'send trasfer'// memo
+            }
+          }]
+        }, {
+          blocksBehind: 3,
+          expireSeconds: 30,
+        })
+    console.log(result)
+}
+// 위에 비동기 함수 호출
+transfer ()
+
+
+
+- buyram 실습
+* setting.js 파일 생성
+* 03_buyram.js 파일 참고
+
+- staking 실습
+* 04_staking.js 파일 참고
+
+- newkey 실습
+* newkey.js 파일 참고
+PS D:\2. 실습 자료\EOS\EOSJS> node newkey.js
+Private key :    5HqSNzVf1b8ntR6dWb6i9ip2sMrBMZYLRFLQFc1Xs2wyXJLXAUY
+Public key :     EOS5rVRhsi8PAHKUufnFrouk7RADXSG3BpgnGfJBS14HPQ3Dj7qxE
+PS D:\2. 실습 자료\EOS\EOSJS> node newkey.js
+Private key :    5JGnrMX6XGqYAfjTeQ93ECXvTbRt6P7JzL7TUqtXh12cJv33Ehk
+Public key :     EOS5WhPbr5akC8HbnmWza4gJzTG96Bw2hTuUQicw269yx4FXrqoRm
+
+- new account 실습
+* 05_new_account.js 파일 참고

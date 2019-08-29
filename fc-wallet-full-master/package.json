@@ -1,0 +1,19 @@
+{
+  "name": "fc-wallet",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.3",
+    "cookie-session": "^2.0.0-beta.3",
+    "debug": "~2.6.9",
+    "ejs": "^2.6.2",
+    "eosjs": "^16.0.9",
+    "express": "^4.16.4",
+    "morgan": "~1.9.0",
+    "node-fetch": "^2.6.0",
+    "nodemon": "^1.18.3"
+  }
+}
